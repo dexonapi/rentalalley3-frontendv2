@@ -1,6 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Search } from 'react-feather';
-import React from 'react';
 import { destinationSuggestions, getFormSections } from '../constants';
 import { AnimatePresence, motion } from 'framer-motion';
 import DatePicker from './DatePicker';
@@ -12,23 +11,18 @@ const SearchForm = () => {
   const [isHovered, setIsHovered] = useState('false');
   const [showDestinationSuggestions, setShowDestinationSuggestions] = useState(false);
   const [showDatePickers, setShowDatePickers] = useState(false);
-  const [showGuestPicker, setShowGuestPicker] = useState(false);
+  const [showCategoryPicker, setShowCategoryPicker] = useState(false);
   const [destination, setDestination] = useState('');
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
-  const [guests, setGuests] = useState({
-    adults: 0,
-    children: 0,
-    infants: 0,
-    pets: 0
-  });
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (!formRef.current?.contains(event.target as Node)) {
         setActiveButton('');
         setShowDestinationSuggestions(false);
-        setShowGuestPicker(false);
+        setShowCategoryPicker(false);
         setShowDatePickers(false);
       }
     };
@@ -59,8 +53,8 @@ const SearchForm = () => {
     checkOut,
     setShowDestinationSuggestions,
     setShowDatePickers,
-    setShowGuestPicker,
-    guests,
+    setShowCategoryPicker,
+    selectedCategory,
   });
 
   return (
@@ -83,9 +77,9 @@ const SearchForm = () => {
                   activeButton === section.id
                     ? 'bg-white custom-shadow rounded-4xl z-20'
                     : isHovered === section.id && activeButton === formSections[index - 1]?.id
-                    ? 'rounded-4xl z-19 before:content-[""] before:absolute before:inset-0 before:-left-12 before:bg-[#D8D8D8] before:rounded-r-4xl before:z-5 before:shadow-[2px_0_4px_rgba(0,0,0,0.1)]'
+                    ? 'rounded-4xl z-19 before:content-[""] before:absolute before:inset-0 before:-left-14 before:bg-[#D8D8D8] before:rounded-r-4xl before:z-5 before:shadow-[2px_0_4px_rgba(0,0,0,0.1)]'
                     : isHovered === section.id && activeButton === formSections[index + 1]?.id
-                    ? 'rounded-4xl z-19 before:content-[""] before:absolute before:inset-0 before:-right-12 before:bg-[#D8D8D8] before:rounded-l-4xl before:z-5 before:shadow-[-2px_0_4px_rgba(0,0,0,0.1)]'
+                    ? 'rounded-4xl z-19 before:content-[""] before:absolute before:inset-0 before:-right-14 before:bg-[#D8D8D8] before:rounded-l-4xl before:z-5 before:shadow-[-2px_0_4px_rgba(0,0,0,0.1)]'
                     : 'rounded-4xl z-20'
                 } 
                 flex flex-start flex-col py-[11px] relative overflow-visible cursor-pointer ${section.paddingClasses} ${
@@ -167,51 +161,26 @@ const SearchForm = () => {
             </AnimatePresence>
 
             <AnimatePresence>
-            {showGuestPicker && (
+            {showCategoryPicker && (
               <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className="absolute top-[80px] left-0 right-0 rounded-4xl bg-white border-[0.5px] border-[#D8D8D8] p-6 z-30">
-                <ul className="space-y-4">
-                  {Object.entries(guests).map(([type, count]) => (
-                    <li key={type} className="flex justify-between items-center">
-                      <div className="capitalize text-[#222222]">
-                        {type}
-                        <span className="block text-sm text-gray-500">
-                          {type === 'adults'
-                            ? 'Ages 13 or above'
-                            : type === 'children'
-                            ? 'Ages 2–12'
-                            : type === 'infants'
-                            ? 'Under 2'
-                            : 'Bringing a service animal?'}
-                        </span>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <button
-                          className="w-8 h-8 rounded-full border border-gray-400 text-[#222222] disabled:opacity-30"
-                          onClick={() =>
-                            setGuests((prev) => ({ ...prev, [type]: Math.max(prev[type as keyof typeof guests] - 1, 0) }))
-                          }
-                          disabled={count === 0}
-                        >
-                          -
-                        </button>
-                        <span className="w-4 text-center">{count}</span>
-                        <button
-                          className="w-8 h-8 rounded-full border border-gray-400 text-[#222222]"
-                          onClick={() =>
-                            setGuests((prev) => ({ ...prev, [type]: prev[type as keyof typeof guests] + 1 }))
-                          }
-                        >
-                          +
-                        </button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="absolute top-[80px] left-90 right-0 rounded-4xl bg-white border-[0.5px] border-[#D8D8D8] p-6 z-30 grid grid-cols-2 gap-4"
+              >
+                {['Property', 'Cars', 'Bicycle', 'Rooms', 'Hotels', 'Trucks', 'Tools'].map((category) => (
+                  <button
+                    key={category}
+                    className={`p-4 rounded-lg text-left hover:bg-gray-100 transition-colors ${selectedCategory === category ? 'bg-blue-50 border border-blue-200' : 'border border-transparent'}`}
+                    onClick={() => {
+                      setSelectedCategory(category);
+                      setShowCategoryPicker(false);
+                    }}
+                  >
+                    <div className="font-medium text-[#222222]">{category}</div>
+                  </button>
+                ))}
               </motion.div>
             )}
             </AnimatePresence>

@@ -19,17 +19,17 @@ export const getFormSections = ({
   checkIn,
   checkOut,
   setShowDestinationSuggestions,
-  setShowGuestPicker,
   setShowDatePickers,
-  guests,
-}: Props): Section[] => [
+  setShowCategoryPicker,
+  selectedCategory,
+}: Omit<Props, 'guests' | 'setShowGuestPicker'> & { setShowCategoryPicker: (v: boolean) => void; selectedCategory: string }): Section[] => [
   {
     id: 'search',
     label: 'Where',
     subLabel: destination || 'Search destinations',
     onClick: () => {
       setShowDestinationSuggestions(true);
-      setShowGuestPicker(false);
+      setShowCategoryPicker(false);
       setShowDatePickers(false);
     },
     paddingClasses: 'pl-21 pr-24',
@@ -40,7 +40,7 @@ export const getFormSections = ({
     subLabel: checkIn ? formatDate(checkIn) : 'Check in',
     onClick: () => {
       setShowDestinationSuggestions(false);
-      setShowGuestPicker(false);
+      setShowCategoryPicker(false);
       setShowDatePickers(true);
     },
     paddingClasses: 'pl-6 pr-10',
@@ -51,24 +51,17 @@ export const getFormSections = ({
     subLabel: checkOut ? formatDate(checkOut) : 'Check out',
     onClick: () => {
       setShowDestinationSuggestions(false);
-      setShowGuestPicker(false);      
+      setShowCategoryPicker(false);
       setShowDatePickers(true);
     },
     paddingClasses: 'pl-6 pr-10',
   },
   {
-    id: 'guest',
-    label: 'Who',
-    subLabel: 
-    guests.adults + guests.children + guests.infants + guests.pets > 0
-      ? [
-          guests.adults + guests.children > 0 ? `${guests.adults + guests.children} guest${guests.adults + guests.children > 1 ? 's' : ''}` : null,
-          guests.infants > 0 ? `${guests.infants} infant${guests.infants > 1 ? 's' : ''}` : null,
-          guests.pets > 0 ? `${guests.pets} pet${guests.pets > 1 ? 's' : ''}` : null
-        ].filter(Boolean).join(', ')
-      : 'Add guests',
+    id: 'category',
+    label: 'Category',
+    subLabel: selectedCategory || 'Select a category',
     onClick: () => {
-      setShowGuestPicker(true);
+      setShowCategoryPicker(true);
       setShowDestinationSuggestions(false);
       setShowDatePickers(false);
     },

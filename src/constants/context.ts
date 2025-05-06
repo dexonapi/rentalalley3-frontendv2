@@ -11,12 +11,7 @@ export type Props = {
   checkIn: string;
   checkOut: string;
   setShowDestinationSuggestions: (v: boolean) => void;
-  guests: {
-    adults: number;
-    children: number;
-    infants: number;
-    pets: number;
-  };
-  setShowGuestPicker: (v: boolean) => void;
+  setShowCategoryPicker: (v: boolean) => void;
+  selectedCategory: string;
   setShowDatePickers: (v: boolean) => void;
 };
