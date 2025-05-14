@@ -117,7 +117,10 @@ const Form = () => {
             )}
 
             <AnimatePresence>
-              {showDestinationSuggestions && <Suggestions destinationSuggestions={destinationSuggestions} setDestination={setDestination} />}
+              {showDestinationSuggestions && <Suggestions 
+                destinationSuggestions={destinationSuggestions} 
+                setDestination={setDestination} 
+              />}
             </AnimatePresence>
 
             <AnimatePresence>
