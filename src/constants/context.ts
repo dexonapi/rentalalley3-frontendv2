@@ -8,8 +8,8 @@ export type Section = {
 
 export type Props = {
   destination: string;
-  checkIn: string;
-  checkOut: string;
+  checkIn: Date | null;
+  checkOut: Date | null;
   setShowDestinationSuggestions: (v: boolean) => void;
   setShowCategoryPicker: (v: boolean) => void;
   selectedCategory: string;

@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { icon_name, profile_icon, menu } from '../assets/icons';
-import SearchForm from './SearchForm';
+import { icon_name, profile_icon, menu } from '../../../../assets/icons';
+import { SearchForm } from '../../../../components/SearchForm';
 
 const Nav = () => {
   const [activeTab, setActiveTab] = useState('place');

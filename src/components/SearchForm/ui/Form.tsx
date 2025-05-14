@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search } from 'react-feather';
-import { destinationSuggestions, getFormSections } from '../constants';
+import { destinationSuggestions, getFormSections } from '../../../constants';
 import { AnimatePresence, motion } from 'framer-motion';
-import DatePicker from './DatePicker';
+import { CategoryPickerUI, DatePickerUI, Suggestions } from './';
 
-const SearchForm = () => {
+const Form = () => {
   const formRef = useRef<HTMLDivElement>(null);
 
   const [activeButton, setActiveButton] = useState('');
@@ -13,8 +13,8 @@ const SearchForm = () => {
   const [showDatePickers, setShowDatePickers] = useState(false);
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
   const [destination, setDestination] = useState('');
-  const [checkIn, setCheckIn] = useState('');
-  const [checkOut, setCheckOut] = useState('');
+  const [checkIn, setCheckIn] = useState<Date | null>(null);
+  const [checkOut, setCheckOut] = useState<Date | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
 
   useEffect(() => {
@@ -33,14 +33,14 @@ const SearchForm = () => {
     };
   }, []);
   
-  const handleCheckInSelect = (date: string) => {
+  const handleCheckInSelect = (date: Date) => {
     setCheckIn(date);
     if (checkOut) {
       setShowDatePickers(false);
     }
   };
 
-  const handleCheckOutSelect = (date: string) => {
+  const handleCheckOutSelect = (date: Date) => {
     setCheckOut(date);
     if (checkIn) {
       setShowDatePickers(false);
@@ -49,8 +49,8 @@ const SearchForm = () => {
 
   const formSections = getFormSections({
     destination,
-    checkIn,
-    checkOut,
+    checkIn: checkIn ? new Date(checkIn) : null,
+    checkOut: checkOut ? new Date(checkOut) : null,
     setShowDestinationSuggestions,
     setShowDatePickers,
     setShowCategoryPicker,
@@ -103,86 +103,39 @@ const SearchForm = () => {
 
             {index < formSections.length - 1 && (
               <span
-                className={`w-[1px] h-[30px] bg-[#D8D8D8] ${
-                  isHovered === section.id || isHovered === formSections[index + 1].id ? `${activeButton === section.id ? 'bg-[#e9e9e9]' : 'bg-[#e9e9e9]'}` : 'bg-[#D8D8D8]'
-                } ${activeButton && activeButton === section.id ? 'bg-[#e9e9e9]' : ''} ${activeButton === section.id || activeButton === formSections[index + 1].id ? 'bg-[#e9e9e9]' : 'bg-[#D8D8D8]'}`}
+              className={`w-[1px] h-[30px] bg-[#D8D8D8] ${
+                // Check if the current section (index) or the next section (index + 1) is hovered
+                isHovered === section.id || isHovered === formSections[index + 1]?.id
+                  ? activeButton !== ''
+                    ? 'bg-[#e9e9e9]' // Blue when adjacent section is hovered and any section is active
+                    : 'bg-white' // White when adjacent section is hovered but no section is active
+                  : activeButton === section.id || activeButton === formSections[index + 1]?.id
+                  ? 'bg-[#e9e9e9]' // Light gray when adjacent section is active but not hovered
+                  : 'bg-[#D8D8D8]' // Default gray
+              }`}
               />
             )}
 
             <AnimatePresence>
-              {showDestinationSuggestions && (
-                <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
-                className="absolute top-[80px] left-0 right-100 rounded-4xl bg-white border-[0.5px] border-[#D8D8D8]">
-                  <ul className="my-5">
-                    {destinationSuggestions.map((suggestion) => (
-                      <li key={suggestion} className="py-2 px-9 cursor-pointer hover:bg-[#D8D8D8]" onClick={() => setDestination(suggestion)}>
-                        {suggestion}
-                      </li>
-                    ))}
-                  </ul>
-                </motion.div>
-              )}
+              {showDestinationSuggestions && <Suggestions destinationSuggestions={destinationSuggestions} setDestination={setDestination} />}
             </AnimatePresence>
 
             <AnimatePresence>
-            {showDatePickers && (
-              <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className="absolute top-[80px] left-0 right-0 flex justify-center z-30 rounded-4xl bg-white border-[0.5px] border-[#D8D8D8]">
-                <div className="flex gap-4 my-5">
-                  <DatePicker
-                    title="Check-in"
-                    onSelect={handleCheckInSelect}
-                    onClose={() => {
-                      if (checkIn && checkOut) {
-                        setShowDatePickers(false);
-                      }
-                    }}
-                  />
-                  <DatePicker
-                    title="Check-out"
-                    onSelect={handleCheckOutSelect}
-                    onClose={() => {
-                      if (checkIn && checkOut) {
-                        setShowDatePickers(false);
-                      }
-                    }}
-                  />
-                </div>
-              </motion.div>
-            )}
+              {showDatePickers && <DatePickerUI
+                handleCheckInSelect={handleCheckInSelect}
+                handleCheckOutSelect={handleCheckOutSelect}
+                setShowDatePickers={setShowDatePickers}
+                checkIn={checkIn} 
+                checkOut={checkOut}
+              />}
             </AnimatePresence>
 
             <AnimatePresence>
-            {showCategoryPicker && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
-                className="absolute top-[80px] left-90 right-0 rounded-4xl bg-white border-[0.5px] border-[#D8D8D8] p-6 z-30 grid grid-cols-2 gap-4"
-              >
-                {['Property', 'Cars', 'Bicycle', 'Rooms', 'Hotels', 'Trucks', 'Tools'].map((category) => (
-                  <button
-                    key={category}
-                    className={`p-4 rounded-lg text-left hover:bg-gray-100 transition-colors ${selectedCategory === category ? 'bg-blue-50 border border-blue-200' : 'border border-transparent'}`}
-                    onClick={() => {
-                      setSelectedCategory(category);
-                      setShowCategoryPicker(false);
-                    }}
-                  >
-                    <div className="font-medium text-[#222222]">{category}</div>
-                  </button>
-                ))}
-              </motion.div>
-            )}
+              {showCategoryPicker && <CategoryPickerUI
+                selectedCategory={selectedCategory}
+                setSelectedCategory={setSelectedCategory}
+                setShowCategoryPicker={setShowCategoryPicker}
+              />}
             </AnimatePresence>
           </React.Fragment>
         ))}
@@ -191,4 +144,4 @@ const SearchForm = () => {
     )
 }
 
-export default SearchForm
+export default Form;
