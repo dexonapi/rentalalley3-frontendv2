@@ -32,7 +32,7 @@ export const getFormSections = ({
       setShowCategoryPicker(false);
       setShowDatePickers(false);
     },
-    paddingClasses: 'pl-21 pr-24',
+    paddingClasses: 'pl-21 pr-20',
   },
   {
     id: 'checkIn',
@@ -65,7 +65,7 @@ export const getFormSections = ({
       setShowDestinationSuggestions(false);
       setShowDatePickers(false);
     },
-    paddingClasses: 'pl-6 pr-45',
+    paddingClasses: 'pl-6 pr-41',
   },
 ];
 

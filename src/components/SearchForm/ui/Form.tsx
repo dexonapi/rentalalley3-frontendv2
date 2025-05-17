@@ -4,7 +4,7 @@ import { destinationSuggestions, getFormSections } from '../../../constants';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CategoryPickerUI, DatePickerUI, Suggestions } from './';
 
-const Form = () => {
+const Form = ({ isScrolled }: { isScrolled: boolean }) => {
   const formRef = useRef<HTMLDivElement>(null);
 
   const [activeButton, setActiveButton] = useState('');
@@ -58,8 +58,8 @@ const Form = () => {
   });
 
   return (
-    <section className="flex justify-center max-container mt-2 font-cereal-Bk overflow-visible ">
-      <div ref={formRef} className={`flex flex-row justify-between items-center  rounded-full border-[0.5px] relative border-[#D8D8D8] min-w-[850px] custom-shadow-form ${activeButton ? 'bg-[#e9e9e9]' : 'bg-white'}`}>
+    <section className="flex justify-center max-container font-cereal-Bk overflow-visible ">
+      <div ref={formRef} className={`flex flex-row justify-between items-center  rounded-full border-[0.5px] absolute border-[#D8D8D8] min-w-[850px] custom-shadow-form ${activeButton ? 'bg-[#e9e9e9]' : 'bg-white'}`}>
         <button className="bg-[#0DB2A9] rounded-full text-white ml-5 p-[9px] hover:bg-blue-600 absolute -left-1 z-30 transition-colors">
           <Search size={24} className="inline-block" />
         </button>
