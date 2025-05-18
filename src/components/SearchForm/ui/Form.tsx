@@ -59,12 +59,15 @@ const Form = ({ isScrolled }: { isScrolled: boolean }) => {
 
   return (
     <section className="flex justify-center max-container font-cereal-Bk overflow-visible ">
-      <div ref={formRef} className={`flex flex-row justify-between items-center  rounded-full border-[0.5px] absolute border-[#D8D8D8] min-w-[850px] custom-shadow-form ${activeButton ? 'bg-[#e9e9e9]' : 'bg-white'}`}>
-        <button className="bg-[#0DB2A9] rounded-full text-white ml-5 p-[9px] hover:bg-blue-600 absolute -left-1 z-30 transition-colors">
+      <div ref={formRef} className={`flex flex-row  items-center  rounded-full border-[0.5px] absolute border-[#D8D8D8] ${!isScrolled ? 'min-w-[850px] justify-between' : 'min-w-[450px] justify-evenly py-1'}  custom-shadow-form ${activeButton ? 'bg-[#e9e9e9]' : 'bg-white'}`}>
+        {!isScrolled && <button className="bg-[#0DB2A9] rounded-full text-white ml-5 p-[9px] hover:bg-blue-600 absolute -left-1 z-30 transition-colors">
           <Search size={24} className="inline-block" />
-        </button>
+        </button>}
 
-        {formSections.map((section, index) => (
+        {formSections.map((section, index) => {
+          if (isScrolled && index === 2) return null; // Skip rendering index 2 when isScrolled is true
+
+          return (
           <React.Fragment key={section.id}>
             <motion.div
               layout
@@ -82,7 +85,7 @@ const Form = ({ isScrolled }: { isScrolled: boolean }) => {
                     ? 'rounded-4xl z-19 before:content-[""] before:absolute before:inset-0 before:-right-14 before:bg-[#D8D8D8] before:rounded-l-4xl before:z-5 before:shadow-[-2px_0_4px_rgba(0,0,0,0.1)]'
                     : 'rounded-4xl z-20'
                 } 
-                flex flex-start flex-col py-[11px] relative overflow-visible cursor-pointer ${section.paddingClasses} ${
+                flex flex-start flex-col py-[11px] relative overflow-visible cursor-pointer ${!isScrolled ? section.paddingClasses : 'px-3'} ${
                   activeButton === section.id ? '' : 'hover:bg-[#D8D8D8]'
                 }`}
               onMouseEnter={() => setIsHovered(section.id)}
@@ -94,10 +97,22 @@ const Form = ({ isScrolled }: { isScrolled: boolean }) => {
               }}
             >
               <div className="relative z-20">
-                <span className="text-xs text-[#070707] w-full" onClick={section.onClick}>
-                  {section.label}
-                </span>
-                <p className="text-sm text-slate-gray w-full">{section.subLabel}</p>
+                { isScrolled ? (
+                  <>
+                    <span className="text-[15px] text-[#070707] w-full" onClick={section.onClick}>
+                      {section.label}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-xs text-[#070707] w-full" onClick={section.onClick}>
+                      {section.label}
+                    </span>
+                    <p className="text-sm text-slate-gray w-full">{section.subLabel}</p>
+                  </>
+                )
+                
+                }
               </div>
             </motion.div>
 
@@ -141,7 +156,8 @@ const Form = ({ isScrolled }: { isScrolled: boolean }) => {
               />}
             </AnimatePresence>
           </React.Fragment>
-        ))}
+          )
+        })}
       </div>  
     </section>
     )
